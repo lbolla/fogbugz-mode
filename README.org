@@ -1,0 +1,35 @@
+#+TITLE: README - fogbugz-emacs
+#+DATE: 10 November 2012
+
+* License and COPYING
+See [[file:COPYING][COPYING]] for license and copyright information.
+
+* Org Mode Integration
+fogbugz-emacs can be integrated with org-mode and that was the
+original intention for creating fogbugz-emacs. Using properties it can
+pull in more information about cases and construct a full list of
+cases for a project.
+
+* The Mock Server
+fogbugz-emacs comes with a web server that simulates the FogBugz API.
+This was created due to a lack of Internet when moving into a new
+place. Another reason is that sometimes you can't do things live. At
+work, it would be a problem to create multiple projects and cases
+while working on fogbugz-emacs. Other users would see this and think
+something is wrong.
+
+A local mock server reduces latency to...basically no latency.
+
+I tried to replicate as much functionality as possible. My reasoning
+is that an interface to a web API is incomplete, and very very
+optimistic, if it can only handle positive cases. It should be able to
+handle the cases where something goes wrong.
+
+The mock server is written in Common Lisp and has been tested with
+SBCL on GNU/Linux. It uses the fantastic Hunchentoot web server
+library and the CXML library to generate the XML output.
+
+* Tasks
+** fogbugz-emacs
+** org-fogbugz
+** Mock Server
