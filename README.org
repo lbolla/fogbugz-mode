@@ -31,5 +31,50 @@ library and the CXML library to generate the XML output.
 
 * Tasks
 ** fogbugz-emacs
+*** TODO Login and logoff commands
+Need to store a token
+*** TODO List cases
+*** TODO List projects
+*** TODO Create case
 ** org-fogbugz
+*** TODO Create case
+Properties:
+  - id
+  - last-updated
+  - creator
+  - area
+
+Tags are listed beside the item.
+
+Assumes that the TODO statuses are setup the same way.
+*** TODO Update case
+Using a timestamp stored in the properties, Last-Updated or something
+like that. Need to be able to force updating with a prefix argument.
 ** Mock Server
+
+* Example Project:The Farm (expected output from org-fogbugz)
+:PROPERTIES:
+:ProjectId: a
+:Owner: [[mailto:grandpa@oldmacdonald.com][Old MacDonald]] (555-294-4778)
+:Group: Internal
+:END:
+
+This is the expected output from the org-fogbugz code.
+** TODO Duck, Duck... but No Goose!						 :first:second:third:
+:PROPERTIES:
+:CaseId: 123
+:OriginalTitle: Problem finding the goose...
+:OpenedBy: [[mailto:grandpa@oldmacdonald.com][Old MacDonald]]
+:Area: Pond
+:Category: Feature
+:Effort: 3 hours
+:LastUpdated: 2012-11-11
+:END:
+
+(The TODO status is set when the case is open, when it's closed, the
+status is switched to DONE)
+
+(This is the latest text summary) I searched the docs, but no goose!
+
+(There is no due date for this case, but if there were, it'd be used
+for the DEADLINE)
