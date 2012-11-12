@@ -80,6 +80,10 @@ like that. Need to be able to force updating with a prefix argument.
 **** TODO [#A] Implement view case command
 **** TODO [#B] Implement create case command
 **** TODO [#B] Implement edit case command
+**** DONE Implement login command
+**** DONE Implement log off command
+**** DONE Implement list filters command
+**** DONE Implement API version command
 * Example Project:The Farm (expected output from org-fogbugz)
 :PROPERTIES:
 :ProjectId: a
