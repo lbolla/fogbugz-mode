@@ -34,6 +34,7 @@
 (require 'cl)
 (require 'xml)
 (require 'url)
+(require 'url-http)
 
 (defgroup fogbugz nil
   "Controlling FogBugz through its API from Emacs."
@@ -54,6 +55,11 @@
   "Password to access the FogBugz API."
   :group 'fogbugz
   :type 'string)
+
+(defvar *fogbugz-api-token*
+  nil
+  "The token that the FogBugz API returns after logging on. Used
+by all commands (other than logon of course).")
 
 (defun fogbugz-api-version ()
   "Returns the version of the api as a list of two numbers; the
