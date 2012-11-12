@@ -4,6 +4,16 @@
 * License and COPYING
 See [[file:COPYING][COPYING]] for license and copyright information.
 
+* What is fogbugz-emacs?
+
+Fogbugz-emacs is an interface for interacting with the FogBugz bug
+tracking system. It lets you view, create, and update cases, projects,
+and whatever else the FogBugz API gives you access to.
+
+The FogBugz website has a listing of all the functionality that their
+API provides. fogbugz-emacs aims to implement support for all of that
+functionality.
+
 * Org Mode Integration
 fogbugz-emacs can be integrated with org-mode and that was the
 original intention for creating fogbugz-emacs. Using properties it can
@@ -35,7 +45,22 @@ library and the CXML library to generate the XML output.
 Need to store a token
 *** TODO List cases
 *** TODO List projects
+*** TODO List areas
+*** TODO List categories
+*** TODO List priorities
+*** TODO List people
+Symbols for the category of people:
+  - active
+  - normal
+  - deleted
+  - community
+  - virtual
+
+Nil is also an option, means don't pass this option to the API call.
+*** TODO List statuses
+*** TODO List milestones (a.k.a fix-fors)
 *** TODO Create case
+*** TODO Edit case
 ** org-fogbugz
 *** TODO Create case
 Properties:
@@ -51,7 +76,10 @@ Assumes that the TODO statuses are setup the same way.
 Using a timestamp stored in the properties, Last-Updated or something
 like that. Need to be able to force updating with a prefix argument.
 ** Mock Server
-
+*** TODO Implement commands
+**** TODO [#A] Implement view case command
+**** TODO [#B] Implement create case command
+**** TODO [#B] Implement edit case command
 * Example Project:The Farm (expected output from org-fogbugz)
 :PROPERTIES:
 :ProjectId: a
