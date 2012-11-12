@@ -61,12 +61,31 @@
   "The token that the FogBugz API returns after logging on. Used
 by all commands (other than logon of course).")
 
+(defun fogbugz-get-response-body (&optional buffer)
+  "Exract HTTP response body from HTTP response, parse it as XML, and return a XML tree as list.
+`buffer' may be a buffer or the name of an existing buffer.
+ If `buffer' is omitted, current-buffer is parsed.
+
+Modifed based on identica-mode.el, renamed from `identica-get-response-body'; removed the call to `identica-clean-response-body'."
+  (or buffer
+      (setq buffer (current-buffer)))
+  (set-buffer buffer)
+  (set-buffer-multibyte t)
+  (let ((start (save-excursion
+		 (goto-char (point-min))
+		 (and (re-search-forward "<\?xml" (point-max) t)
+		      (match-beginning 0)))))
+    (and start
+         (xml-parse-region start (point-max)))))
+
 (defun fogbugz-api-version ()
   "Returns the version of the api as a list of two numbers; the
 first number is the major version, the second is the minor
 version."
-  ;((url-http fogbugz-api-url)
-  (list 8 1))
+  (let ((buffer (url-retrieve-synchronously fogbugz-api-url)))
+	(if buffer
+		(fogbugz-get-response-body buffer)
+	  (error "fogbugz-api-url may be incorrect."))))
 
 (defun fogbugz-api-version-string ()
   (let ((version (fogbugz-api-version)))
