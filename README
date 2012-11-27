@@ -42,13 +42,14 @@ library and the CXML library to generate the XML output.
 
 * Tasks
 ** fogbugz-emacs
-*** DONE Login and logoff commands
+*** DONE [[file:fogbugz.el::fogbugz-logon][Login]] and [[file:fogbugz.el::fogbugz-logoff][logoff]] commands
 Need to store a token
-*** DONE List case filters
-*** DONE Set the current case filter
+*** DONE List case filters, file:fogbugz.el::fogbugz-list-filters
+*** DONE Set the current case filter, file:fogbugz.el::fogbugz-set-current-filter
 *** TODO List cases
-*** TODO List projects
+*** DONE List projects, file:fogbugz.el::fogbugz-list-projects
 *** TODO List areas
+*** TODO List areas for a project
 *** TODO List categories
 *** TODO List priorities
 *** TODO List people
@@ -64,6 +65,24 @@ Nil is also an option, means don't pass this option to the API call.
 *** TODO List milestones (a.k.a fix-fors)
 *** TODO Create case
 *** TODO Edit case
+*** TODO Mapping field names of fogbugz objects to lispy names
+When a field name begins with f it's a boolean value, should convert
+"true" to T and the "false" to NIL. The lispy name should be suffixed
+with "-p".
+
+When a field name begins with s it's a string value.
+
+When it begins with ix it's an ID of another object so "-id" should be
+the suffix of the lispy name.
+
+The type notation should be dropped from the field name when
+converting to the lispy name.
+
+Examples:
+  - fWrite :: read-and-write-p
+  - ixPersonOwner :: owner-id
+  - sPerson :: person
+  - fDeleted :: deleted-p
 ** org-fogbugz
 *** TODO Create case
 Properties:

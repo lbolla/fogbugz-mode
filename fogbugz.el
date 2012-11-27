@@ -128,17 +128,32 @@ version."
   (let ((buffer (url-retrieve-synchronously (concat fogbugz-api-url ".asp?cmd=listFilters&token=" *fogbugz-api-token*))))
     (if buffer
         (let ((response (fogbugz-get-response-body buffer)))
-          (mapcar (lambda (node) (list (xml-get-attribute node 'sFilter)
-                                       (cons 'type (xml-get-attribute node 'type))
-                                       (cons 'sFilter (xml-get-attribute node 'sFilter))
+          (mapcar (lambda (node) (list (cons 'type (xml-get-attribute node 'type))
+                                       (cons 'id (xml-get-attribute node 'sFilter))
                                        (cons 'name (third node))))
                   (xml-get-children (first (xml-get-children response 'filters)) 'filter)))
       (error "Some kind of url error occurred"))))
 
 (defun fogbugz-set-current-filter (filter-id)
   "Sets the current filter for Fogbugz"
-  (url-retrieve-synchronously (concat fogbugz-api-url ".asp?cmd=setCurrentFIlter&sFilter="
+  (url-retrieve-synchronously (concat fogbugz-api-url ".asp?cmd=setCurrentFilter&sFilter="
                                       (url-hexify-string filter-id)
                                       "&token=" *fogbugz-api-token*))
   (message "Fogbugz cases filter set to %s" filter-id)
   filter-id)
+
+(defun fogbugz-list-projects (&optional read-and-write-p)
+  "Returns a list of Fogbugz projects that you can read cases
+  from. If read-and-write-p is set, returns a list of projects
+  that you can also create new cases for."
+  (let ((buffer (url-retrieve-synchronously (concat fogbugz-api-url ".asp?cmd=listProjects"
+                                                    (and read-and-write-p "&fWrite=1")
+                                                    "&token=" *fogbugz-api-token*))))
+    (if buffer
+        (let ((response (fogbugz-get-response-body buffer)))
+          (mapcar (lambda (node) (loop for emacs-name in '(id name owner-id owner email phone inbox-p workflow-id deleted-p)
+                                       for api-name in '(ixProject sProject ixPersonOwner sPersonOwner sEmail sPhone fInbox ixWorkflow fDeleted)
+                                       collect (cons emacs-name (third (first (xml-get-children node api-name))))))
+                  (xml-get-children (first (xml-get-children response 'projects)) 'project)))
+      (error "Some kind of url error occurred"))))
+
