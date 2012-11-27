@@ -81,6 +81,14 @@ Modifed based on identica-mode.el, renamed from `identica-get-response-body'; re
     (and start
          (first (xml-parse-region start (point-max))))))
 
+(defun fogbugz-api-do (command &rest url-args)
+  (let ((buffer (url-retrieve-synchronously (apply 'concat fogbugz-api-url ".asp?cmd=" command
+                                                   "&token=" *fogbugz-api-token*
+                                                   url-args))))
+    (if buffer
+        (fogbugz-get-response-body buffer)
+      (error "Some kind of url error occurred"))))
+
 (defun fogbugz-api-version ()
   "Returns the version of the api as a list of two numbers; the
 first number is the major version, the second is the minor
@@ -97,23 +105,20 @@ version."
             (third (nth 5 version)))))
 
 (defun fogbugz-logon ()
-  (let ((buffer (url-retrieve-synchronously (concat fogbugz-api-url ".asp?cmd=logon&email="
-                                                    (url-hexify-string fogbugz-username)
-                                                    "&password=" fogbugz-password))))
-    (if buffer
-        (let* ((response (fogbugz-get-response-body buffer))
-               (token (third (first (xml-get-children response 'token))))
-               (error-node (first (xml-get-children response 'error))))
-          (cond (token (progn (message "Logged on to Fogbugz...")
-                              (setq *fogbugz-api-token* token)))
-                ((xml-get-attribute-or-nil error-node 'code) (error (third error-node)))
-                (t error "Some other error occurred")))
-      (error "Some kind of url error occurred"))))
+  (let* ((response (fogbugz-api-do "logon"
+                                   "&email=" (url-hexify-string fogbugz-username)
+                                   "&password=" fogbugz-password))
+         (token (third (first (xml-get-children response 'token))))
+         (error-node (first (xml-get-children response 'error))))
+    (cond (token (progn (message "Logged on to Fogbugz...")
+                        (setq *fogbugz-api-token* token)))
+          ((xml-get-attribute-or-nil error-node 'code) (error (third error-node)))
+          (t error "Some other error occurred"))))
 
 (defun fogbugz-logoff ()
   (if *fogbugz-api-token*
       (progn
-        (url-retrieve-synchronously (concat fogbugz-api-url ".asp?cmd=logoff&token=" *fogbugz-api-token*))
+        (fogbugz-api-do "logoff")
         (setq *fogbugz-api-token* nil))
     (display-warning :fogbugz "Not logged on")))
 
@@ -125,20 +130,15 @@ version."
          (sFilter ...))
      ...)
 "
-  (let ((buffer (url-retrieve-synchronously (concat fogbugz-api-url ".asp?cmd=listFilters&token=" *fogbugz-api-token*))))
-    (if buffer
-        (let ((response (fogbugz-get-response-body buffer)))
-          (mapcar (lambda (node) (list (cons 'type (xml-get-attribute node 'type))
-                                       (cons 'id (xml-get-attribute node 'sFilter))
-                                       (cons 'name (third node))))
-                  (xml-get-children (first (xml-get-children response 'filters)) 'filter)))
-      (error "Some kind of url error occurred"))))
+  (let ((response (fogbugz-api-do "listFilters")))
+    (mapcar (lambda (node) (list (cons 'type (xml-get-attribute node 'type))
+                                 (cons 'id (xml-get-attribute node 'sFilter))
+                                 (cons 'name (third node))))
+            (xml-get-children (first (xml-get-children response 'filters)) 'filter))))
 
 (defun fogbugz-set-current-filter (filter-id)
   "Sets the current filter for Fogbugz"
-  (url-retrieve-synchronously (concat fogbugz-api-url ".asp?cmd=setCurrentFilter&sFilter="
-                                      (url-hexify-string filter-id)
-                                      "&token=" *fogbugz-api-token*))
+  (fogbugz-api-do "setCurrentFilter" "&sFilter=" (url-hexify-string filter-id))
   (message "Fogbugz cases filter set to %s" filter-id)
   filter-id)
 
@@ -146,14 +146,19 @@ version."
   "Returns a list of Fogbugz projects that you can read cases
   from. If read-and-write-p is set, returns a list of projects
   that you can also create new cases for."
-  (let ((buffer (url-retrieve-synchronously (concat fogbugz-api-url ".asp?cmd=listProjects"
-                                                    (and read-and-write-p "&fWrite=1")
-                                                    "&token=" *fogbugz-api-token*))))
-    (if buffer
-        (let ((response (fogbugz-get-response-body buffer)))
-          (mapcar (lambda (node) (loop for emacs-name in '(id name owner-id owner email phone inbox-p workflow-id deleted-p)
-                                       for api-name in '(ixProject sProject ixPersonOwner sPersonOwner sEmail sPhone fInbox ixWorkflow fDeleted)
-                                       collect (cons emacs-name (third (first (xml-get-children node api-name))))))
-                  (xml-get-children (first (xml-get-children response 'projects)) 'project)))
-      (error "Some kind of url error occurred"))))
+  (let ((response (fogbugz-api-do "listProjects" (and read-and-write-p "&fWrite=1"))))
+    (mapcar (lambda (node) (loop for emacs-name in '(id name owner-id owner email phone inbox-p workflow-id deleted-p)
+                                 for api-name in '(ixProject sProject ixPersonOwner sPersonOwner sEmail sPhone fInbox ixWorkflow fDeleted)
+                                 collect (cons emacs-name (third (first (xml-get-children node api-name))))))
+            (xml-get-children (first (xml-get-children response 'projects)) 'project))))
 
+(defun fogbugz-list-areas (&optional read-and-write-p)
+  "Returns a list of Fogbugz areas that you can read cases
+from. If read-and-write-p is set, returns a list of areas that
+you can also create new cases for."
+  (let ((response (fogbugz-api-do "listAreas" (and read-and-write-p "&fWrite=1"))))
+    response))
+
+(defun fogbugz-list-areas-for-project (&optional project-id)
+  "Returns a list of Fogbugz areas for a particular project."
+  )
