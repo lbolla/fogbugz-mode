@@ -43,17 +43,18 @@
   :prefix "fogbugz-"
   :group 'tools)
 
-(defcustom fogbugz-api-url "http://fogbugz.com/api.xml"
-  "The URL to the FogBugz API."
+(defcustom fogbugz-api-url "http://fogbugz.com/api"
+  "The URL to the FogBugz API. Do not include the extension (.xml
+or .asp) in the URL. This is added depending on the command"
   :group 'fogbugz
   :type 'string)
 
-(defcustom fogbugz-api-username "username"
+(defcustom fogbugz-username "username"
   "Username to access the FogBugz API."
   :group 'fogbugz
   :type 'string)
 
-(defcustom fogbugz-api-password "password"
+(defcustom fogbugz-password "password"
   "Password to access the FogBugz API."
   :group 'fogbugz
   :type 'string)
@@ -84,7 +85,7 @@ Modifed based on identica-mode.el, renamed from `identica-get-response-body'; re
   "Returns the version of the api as a list of two numbers; the
 first number is the major version, the second is the minor
 version."
-  (let ((buffer (url-retrieve-synchronously (concat fogbugz-api-url "api.xml"))))
+  (let ((buffer (url-retrieve-synchronously (concat fogbugz-api-url ".xml"))))
     (if buffer
         (fogbugz-get-response-body buffer)
       (error "fogbugz-api-url may be incorrect."))))
@@ -95,10 +96,10 @@ version."
             (third (nth 3 version))
             (third (nth 5 version)))))
 
-(defun fogbugz-api-logon ()
-  (let ((buffer (url-retrieve-synchronously (concat fogbugz-api-url "api.asp?cmd=logon&email="
-                                                    (url-hexify-string fogbugz-api-username)
-                                                    "&password=" fogbugz-api-password))))
+(defun fogbugz-logon ()
+  (let ((buffer (url-retrieve-synchronously (concat fogbugz-api-url ".asp?cmd=logon&email="
+                                                    (url-hexify-string fogbugz-username)
+                                                    "&password=" fogbugz-password))))
     (if buffer
         (let* ((response (fogbugz-get-response-body buffer))
                (token (third (first (xml-get-children response 'token))))
@@ -109,9 +110,35 @@ version."
                 (t error "Some other error occurred")))
       (error "Some kind of url error occurred"))))
 
-(defun fogbugz-api-logoff ()
+(defun fogbugz-logoff ()
   (if *fogbugz-api-token*
       (progn
-        (url-retrieve-synchronously (concat fogbugz-api-url "api.asp?cmd=logoff&token=" *fogbugz-api-token*))
+        (url-retrieve-synchronously (concat fogbugz-api-url ".asp?cmd=logoff&token=" *fogbugz-api-token*))
         (setq *fogbugz-api-token* nil))
     (display-warning :fogbugz "Not logged on")))
+
+(defun fogbugz-list-filters ()
+  "Returns a list of case filters in the structure:
+
+    ((id (type ...)
+         (name ...)
+         (sFilter ...))
+     ...)
+"
+  (let ((buffer (url-retrieve-synchronously (concat fogbugz-api-url ".asp?cmd=listFilters&token=" *fogbugz-api-token*))))
+    (if buffer
+        (let ((response (fogbugz-get-response-body buffer)))
+          (mapcar (lambda (node) (list (xml-get-attribute node 'sFilter)
+                                       (cons 'type (xml-get-attribute node 'type))
+                                       (cons 'sFilter (xml-get-attribute node 'sFilter))
+                                       (cons 'name (third node))))
+                  (xml-get-children (first (xml-get-children response 'filters)) 'filter)))
+      (error "Some kind of url error occurred"))))
+
+(defun fogbugz-set-current-filter (filter-id)
+  "Sets the current filter for Fogbugz"
+  (url-retrieve-synchronously (concat fogbugz-api-url ".asp?cmd=setCurrentFIlter&sFilter="
+                                      (url-hexify-string filter-id)
+                                      "&token=" *fogbugz-api-token*))
+  (message "Fogbugz cases filter set to %s" filter-id)
+  filter-id)

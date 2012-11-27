@@ -1,6 +1,6 @@
 README -*- mode: org; -*-
 #+TITLE: README - fogbugz-emacs
-#+DATE: 10 November 2012
+#+DATE: 27 November 2012
 
 * License and COPYING
 See [[file:COPYING][COPYING]] for license and copyright information.
@@ -42,8 +42,10 @@ library and the CXML library to generate the XML output.
 
 * Tasks
 ** fogbugz-emacs
-*** TODO Login and logoff commands
+*** DONE Login and logoff commands
 Need to store a token
+*** DONE List case filters
+*** DONE Set the current case filter
 *** TODO List cases
 *** TODO List projects
 *** TODO List areas
