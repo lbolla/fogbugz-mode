@@ -36,6 +36,8 @@
 (require 'url)
 (require 'url-http)
 
+(provide 'fogbugz)
+
 (defgroup fogbugz nil
   "Controlling FogBugz through its API from Emacs."
   :prefix "fogbugz-"
@@ -76,17 +78,40 @@ Modifed based on identica-mode.el, renamed from `identica-get-response-body'; re
 		 (and (re-search-forward "<\?xml" (point-max) t)
 		      (match-beginning 0)))))
     (and start
-         (xml-parse-region start (point-max)))))
+         (first (xml-parse-region start (point-max))))))
 
 (defun fogbugz-api-version ()
   "Returns the version of the api as a list of two numbers; the
 first number is the major version, the second is the minor
 version."
-  (let ((buffer (url-retrieve-synchronously fogbugz-api-url)))
-	(if buffer
-		(fogbugz-get-response-body buffer)
-	  (error "fogbugz-api-url may be incorrect."))))
+  (let ((buffer (url-retrieve-synchronously (concat fogbugz-api-url "api.xml"))))
+    (if buffer
+        (fogbugz-get-response-body buffer)
+      (error "fogbugz-api-url may be incorrect."))))
 
 (defun fogbugz-api-version-string ()
   (let ((version (fogbugz-api-version)))
-	(format "%d.%d" (first version) (second version))))
+    (format "%s.%s"
+            (third (nth 3 version))
+            (third (nth 5 version)))))
+
+(defun fogbugz-api-logon ()
+  (let ((buffer (url-retrieve-synchronously (concat fogbugz-api-url "api.asp?cmd=logon&email="
+                                                    (url-hexify-string fogbugz-api-username)
+                                                    "&password=" fogbugz-api-password))))
+    (if buffer
+        (let* ((response (fogbugz-get-response-body buffer))
+               (token (third (first (xml-get-children response 'token))))
+               (error-node (first (xml-get-children response 'error))))
+          (cond (token (progn (message "Logged on to Fogbugz...")
+                              (setq *fogbugz-api-token* token)))
+                ((xml-get-attribute-or-nil error-node 'code) (error (third error-node)))
+                (t error "Some other error occurred")))
+      (error "Some kind of url error occurred"))))
+
+(defun fogbugz-api-logoff ()
+  (if *fogbugz-api-token*
+      (progn
+        (url-retrieve-synchronously (concat fogbugz-api-url "api.asp?cmd=logoff&token=" *fogbugz-api-token*))
+        (setq *fogbugz-api-token* nil))
+    (display-warning :fogbugz "Not logged on")))
