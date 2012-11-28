@@ -152,13 +152,45 @@ version."
                                  collect (cons emacs-name (third (first (xml-get-children node api-name))))))
             (xml-get-children (first (xml-get-children response 'projects)) 'project))))
 
+(defun fogbugz-area-type-symbol (area)
+  "Converts the type of an area to a symbol."
+  (case (elt (second (assoc 'type area)) 0)
+    (?0 'normal)
+    (?1 'not-spam)
+    (?2 'undecided)
+    (?3 'spam)))
+
 (defun fogbugz-list-areas (&optional read-and-write-p)
   "Returns a list of Fogbugz areas that you can read cases
 from. If read-and-write-p is set, returns a list of areas that
 you can also create new cases for."
   (let ((response (fogbugz-api-do "listAreas" (and read-and-write-p "&fWrite=1"))))
+    (mapcar (lambda (node) (loop for emacs-name in '(id name project-id project owner-id owner type)
+                                 for api-name in '(ixArea sArea ixProject sProject ixPersonOwner sPersonOwner nType)
+                                 collect (cons emacs-name (third (first (xml-get-children node api-name))))))
+            (xml-get-children (first (xml-get-children response 'areas)) 'area))))
+
+(defun fogbugz-list-areas-for-project (project-id &optional read-and-write-p)
+  "Returns a list of Fogbugz areas for a particular project."
+  (let ((response (fogbugz-api-do "listAreas"
+                                  "&ixProject=" project-id
+                                  (and read-and-write-p "&fWrite=1"))))
+    (mapcar (lambda (node) (loop for emacs-name in '(id name project-id project type)
+                                 for api-name in '(ixArea sArea ixProject sProject nType)
+                                 collect (cons emacs-name (third (first (xml-get-children node api-name))))))
+            (xml-get-children (first (xml-get-children response 'areas)) 'area))))
+
+(defun fogbugz-list-categories ()
+  (let ((response (fogbugz-api-do "listCategories")))
+    (mapcar (lambda (node) (loop for emacs-name in '(id name plural status-default-id status-default-active-id schedule-item-p deleted-p order icon-type attachment-icon-id)
+                                 for api-name in '(ixCategory sCategory sPlural ixStatusDefault ixStatusDefaultActive fIsScheduleItem fDeleted iOrder nIconType ixAttachementIcon)
+                                 collect (cons emacs-name (third (first (xml-get-children node api-name))))))
+            (xml-get-children (first (xml-get-children response 'categories)) 'category))))
+
+(defun fogbugz-list-priorities ()
+  (let ((response (fogbugz-api-do "listPriorities")))
     response))
 
-(defun fogbugz-list-areas-for-project (&optional project-id)
-  "Returns a list of Fogbugz areas for a particular project."
-  )
+(defun fogbugz-list-people ()
+  (let ((response (fogbugz-api-do "listPeople")))
+    response))

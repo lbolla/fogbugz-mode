@@ -48,8 +48,8 @@ Need to store a token
 *** DONE Set the current case filter, file:fogbugz.el::fogbugz-set-current-filter
 *** TODO List cases
 *** DONE List projects, file:fogbugz.el::fogbugz-list-projects
-*** TODO List areas
-*** TODO List areas for a project
+*** DONE List areas
+*** DONE List areas for a project
 *** TODO List categories
 *** TODO List priorities
 *** TODO List people
