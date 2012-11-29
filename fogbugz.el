@@ -193,4 +193,7 @@ you can also create new cases for."
 
 (defun fogbugz-list-people ()
   (let ((response (fogbugz-api-do "listPeople")))
-    response))
+    (mapcar (lambda (node) (loop for emacs-name in '(id name email phone administrator-p community-p virtual-p deleted-p notify-p homepage locale language timezone)
+                                 for api-name in '(ixPerson sFullName sEmail sPhone fAdministrator fCommunity fVirtual fDeleted fNotify sHomepage sLocale sLanguage sTimeZoneKey)
+                                 collect (cons emacs-name (third (first (xml-get-children node api-name))))))
+            (xml-get-children (first (xml-get-children response 'people)) 'person))))
