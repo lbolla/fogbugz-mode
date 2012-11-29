@@ -1,7 +1,3 @@
-README -*- mode: org; -*-
-#+TITLE: README - fogbugz-emacs
-#+DATE: 27 November 2012
-
 * License and COPYING
 See [[file:COPYING][COPYING]] for license and copyright information.
 
@@ -42,12 +38,12 @@ library and the CXML library to generate the XML output.
 
 * Tasks
 ** fogbugz-emacs
-*** DONE [[file:fogbugz.el::fogbugz-logon][Login]] and [[file:fogbugz.el::fogbugz-logoff][logoff]] commands
+*** DONE [[file:./fogbugz.el::fogbugz-logon][Login]] and [[file:./fogbugz.el::fogbugz-logoff][logoff]] commands
 Need to store a token
-*** DONE List case filters, file:fogbugz.el::fogbugz-list-filters
-*** DONE Set the current case filter, file:fogbugz.el::fogbugz-set-current-filter
+*** DONE List case filters, file:./fogbugz.el::fogbugz-list-filters
+*** DONE Set the current case filter, file:./fogbugz.el::fogbugz-set-current-filter
 *** TODO List cases
-*** DONE List projects, file:fogbugz.el::fogbugz-list-projects
+*** DONE List projects, file:./fogbugz.el::fogbugz-list-projects
 *** DONE List areas
 *** DONE List areas for a project
 *** TODO List categories
