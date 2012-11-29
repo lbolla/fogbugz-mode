@@ -84,7 +84,8 @@ Examples:
   - sPerson :: person
   - fDeleted :: deleted-p
 ** org-fogbugz
-*** TODO Create case
+*** TODO Pull case from API
+*** TODO Create new case
 Properties:
   - id
   - last-updated
@@ -94,9 +95,12 @@ Properties:
 Tags are listed beside the item.
 
 Assumes that the TODO statuses are setup the same way.
+*** TODO Push case to API
 *** TODO Update case
 Using a timestamp stored in the properties, Last-Updated or something
 like that. Need to be able to force updating with a prefix argument.
+*** DONE Create tags alist
+*** TODO Modify tags alist so that it makes categories a separate tag group, file:org-fogbugz.el::org-fogbugz-tag-alist
 ** Mock Server
 *** TODO Implement commands
 **** TODO [#A] Implement view case command
