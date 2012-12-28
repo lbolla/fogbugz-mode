@@ -89,6 +89,30 @@ Modifed based on identica-mode.el, renamed from `identica-get-response-body'; re
         (fogbugz-get-response-body buffer)
       (error "Some kind of url error occurred"))))
 
+(defun fogbugz-map-response (api-do-args
+                             emacs-names
+                             api-names
+                             xml-root-element
+                             xml-child-element)
+  "Maps the response from a Fogbugz api call to more lispy
+names. The API-DO-ARGS are passed to
+`fogbugz-api-do'.
+
+EMACS-NAMES are the lispy property names for each item. API-NAMES
+are the corresponding property names in the API response.
+
+XML-ROOT-ELEMENT is the root element wrapping the response, and
+XML-CHILD-ELEMENT is each child element in the response to map
+over."
+  (let ((response (apply 'fogbugz-api-do api-do-args)))
+    (mapcar (lambda (node)
+              (loop for emacs-name in emacs-names
+                    for api-name in api-names
+                    collect (cons emacs-name (third (first (xml-get-children node api-name))))))
+            (xml-get-children (first (xml-get-children response
+                                                       xml-root-element))
+                              xml-child-element))))
+
 (defun fogbugz-api-version ()
   "Returns the version of the api as a list of two numbers; the
 first number is the major version, the second is the minor
