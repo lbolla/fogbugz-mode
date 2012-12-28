@@ -212,12 +212,26 @@ you can also create new cases for."
             (xml-get-children (first (xml-get-children response 'categories)) 'category))))
 
 (defun fogbugz-list-priorities ()
+  ;; TODO
   (let ((response (fogbugz-api-do "listPriorities")))
     response))
 
 (defun fogbugz-list-people ()
+  "Returns a list of people registered in Fogbugz.
+
+Note: Fogbugz API says you can include an argument but this isn't
+needed, the normal list is enough:
+
+    Arguments: fIncludeNormal=1, fIncludeCommunity=1,
+    fIncludeVirtual=1 -- if you don't supply any arguments, the
+    API assumes you mean fIncludeNormal=1"
   (let ((response (fogbugz-api-do "listPeople")))
     (mapcar (lambda (node) (loop for emacs-name in '(id name email phone administrator-p community-p virtual-p deleted-p notify-p homepage locale language timezone)
                                  for api-name in '(ixPerson sFullName sEmail sPhone fAdministrator fCommunity fVirtual fDeleted fNotify sHomepage sLocale sLanguage sTimeZoneKey)
                                  collect (cons emacs-name (third (first (xml-get-children node api-name))))))
             (xml-get-children (first (xml-get-children response 'people)) 'person))))
+
+(defun fogbugz-list-cases ()
+  "Returns a list of all cases. You probably want to use
+`fogbugz-filter-cases' or `fogbugz-search-cases'."
+  (let ((response (fogbugz-api-do "search"
