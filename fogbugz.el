@@ -177,13 +177,15 @@ version."
 
 (defun fogbugz-list-projects (&optional read-and-write-p)
   "Returns a list of Fogbugz projects that you can read cases
-  from. If read-and-write-p is set, returns a list of projects
-  that you can also create new cases for."
-  (let ((response (fogbugz-api-do "listProjects" (and read-and-write-p "&fWrite=1"))))
-    (mapcar (lambda (node) (loop for emacs-name in '(id name owner-id owner email phone inbox-p workflow-id deleted-p)
-                                 for api-name in '(ixProject sProject ixPersonOwner sPersonOwner sEmail sPhone fInbox ixWorkflow fDeleted)
-                                 collect (cons emacs-name (third (first (xml-get-children node api-name))))))
-            (xml-get-children (first (xml-get-children response 'projects)) 'project))))
+from. If read-and-write-p is set, returns a list of projects that
+you can also create new cases for.
+
+Uses `fogbugz-map-response'."
+  (fogbugz-map-response `("listProjects" ,(and read-and-write-p "&fWrite=1"))
+                        '(id name owner-id owner email phone inbox-p workflow-id deleted-p)
+                        '(ixProject sProject ixPersonOwner sPersonOwner sEmail sPhone fInbox ixWorkflow fDeleted)
+                        'projects
+                        'project))
 
 (defun fogbugz-area-type-symbol (area)
   "Converts the type of an area to a symbol."
