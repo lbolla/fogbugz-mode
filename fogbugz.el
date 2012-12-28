@@ -226,13 +226,24 @@ Uses `fogbugz-map-response'."
                         'area))
 
 (defun fogbugz-list-categories ()
-  (let ((response (fogbugz-api-do "listCategories")))
-    (mapcar (lambda (node) (loop for emacs-name in '(id name plural status-default-id status-default-active-id schedule-item-p deleted-p order icon-type attachment-icon-id)
-                                 for api-name in '(ixCategory sCategory sPlural ixStatusDefault ixStatusDefaultActive fIsScheduleItem fDeleted iOrder nIconType ixAttachementIcon)
-                                 collect (cons emacs-name (third (first (xml-get-children node api-name))))))
-            (xml-get-children (first (xml-get-children response 'categories)) 'category))))
+  "Returns a list of categories.
+
+Uses `fogbugz-map-response'."
+  (fogbugz-map-response '("listCategories")
+                        '(id name plural status-default-id status-default-active-id schedule-item-p deleted-p order icon-type attachment-icon-id)
+                        '(ixCategory sCategory sPlural ixStatusDefault ixStatusDefaultActive fIsScheduleItem fDeleted iOrder nIconType ixAttachementIcon)
+                        'categories
+                        'category))
 
 (defun fogbugz-list-priorities ()
+  "Returns a list of priorities that can be set for a case.
+
+Uses `fogbugz-map-response'."
+  (fogbugz-map-response '("listPriorities")
+                        '(id name)
+                        '(ixPriority sPriority)
+                        'priorities
+                        'priority))
   ;; TODO
   (let ((response (fogbugz-api-do "listPriorities")))
     response))
