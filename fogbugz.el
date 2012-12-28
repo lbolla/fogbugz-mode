@@ -197,23 +197,33 @@ Uses `fogbugz-map-response'."
 
 (defun fogbugz-list-areas (&optional read-and-write-p)
   "Returns a list of Fogbugz areas that you can read cases
-from. If read-and-write-p is set, returns a list of areas that
-you can also create new cases for."
-  (let ((response (fogbugz-api-do "listAreas" (and read-and-write-p "&fWrite=1"))))
-    (mapcar (lambda (node) (loop for emacs-name in '(id name project-id project owner-id owner type)
-                                 for api-name in '(ixArea sArea ixProject sProject ixPersonOwner sPersonOwner nType)
-                                 collect (cons emacs-name (third (first (xml-get-children node api-name))))))
-            (xml-get-children (first (xml-get-children response 'areas)) 'area))))
+from. If READ-AND-WRITE-P is true, returns a list of areas that
+you can also create new cases for.
+
+Uses `fogbugz-map-response'."
+  (fogbugz-map-response `("listAreas" ,(and read-and-write-p "&fWrite=1"))
+                        '(id name project-id project owner-id owner type)
+                        '(ixArea sArea ixProject sProject ixPersonOwner sPersonOwner nType)
+                        'areas
+                        'area))
 
 (defun fogbugz-list-areas-for-project (project-id &optional read-and-write-p)
-  "Returns a list of Fogbugz areas for a particular project."
-  (let ((response (fogbugz-api-do "listAreas"
-                                  "&ixProject=" project-id
-                                  (and read-and-write-p "&fWrite=1"))))
-    (mapcar (lambda (node) (loop for emacs-name in '(id name project-id project type)
-                                 for api-name in '(ixArea sArea ixProject sProject nType)
-                                 collect (cons emacs-name (third (first (xml-get-children node api-name))))))
-            (xml-get-children (first (xml-get-children response 'areas)) 'area))))
+  "Returns a list of Fogbugz areas for a particular
+project. PROJECT-ID, a string, is the id of the project. If
+READ-AND-WRITE-P is true, returns a list of areas for the project
+that you can also create new cases for.
+
+The areas do not include the project name or the project
+id (which are also returned by the API).
+
+Uses `fogbugz-map-response'."
+  (fogbugz-map-response `("listAreas"
+                          "&ixProject=" ,project-id
+                          ,(and read-and-write-p "&fWrite=1"))
+                        '(id name type)
+                        '(ixArea sArea nType)
+                        'areas
+                        'area))
 
 (defun fogbugz-list-categories ()
   (let ((response (fogbugz-api-do "listCategories")))
