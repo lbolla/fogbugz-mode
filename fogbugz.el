@@ -82,6 +82,15 @@ Modifed based on identica-mode.el, renamed from `identica-get-response-body'; re
          (first (xml-parse-region start (point-max))))))
 
 (defun fogbugz-api-do (command &rest url-args)
+  "Connects to the Fogbugz api and issues the command. Returns XML response from the buffer (using `fogbugz-get-response-body') or an error.
+
+Constructs the URL for this using COMMAND and URL-ARGS. URL-ARGS are strings that construct the parameter list.
+
+Examples:
+    (fogbugz-api-do \"example\" \"&foo=bar\"
+                                \"&alice=bob\")
+    (fogbugz-api-do \"another-example\")
+"
   (let ((buffer (url-retrieve-synchronously (apply 'concat fogbugz-api-url ".asp?cmd=" command
                                                    "&token=" *fogbugz-api-token*
                                                    url-args))))
