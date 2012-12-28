@@ -48,15 +48,7 @@ Need to store a token
 *** DONE List areas for a project
 *** TODO List categories
 *** TODO List priorities
-*** TODO List people
-Symbols for the category of people:
-  - active
-  - normal
-  - deleted
-  - community
-  - virtual
-
-Nil is also an option, means don't pass this option to the API call.
+*** DONE List people
 *** TODO List statuses
 *** TODO List milestones (a.k.a fix-fors)
 *** TODO Create case
