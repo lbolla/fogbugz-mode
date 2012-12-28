@@ -46,7 +46,7 @@ Need to store a token
 *** DONE List projects, file:./fogbugz.el::fogbugz-list-projects
 *** DONE List areas
 *** DONE List areas for a project
-*** TODO List categories
+*** DONE List categories
 *** TODO List priorities
 *** DONE List people
 *** TODO List statuses
@@ -54,14 +54,14 @@ Need to store a token
 *** TODO Create case
 *** TODO Edit case
 *** TODO Mapping field names of fogbugz objects to lispy names
-When a field name begins with f it's a boolean value, should convert
-"true" to T and the "false" to NIL. The lispy name should be suffixed
-with "-p".
+When a field name begins with "f" it's a boolean value, should be
+converted "true" to T and the "false" to NIL. The lispy name should be
+suffixed with "-p".
 
-When a field name begins with s it's a string value.
+When a field name begins with "s" it's a string value.
 
-When it begins with ix it's an ID of another object so "-id" should be
-the suffix of the lispy name.
+When it begins with "ix" it's an ID of another object so "-id" should
+be the suffix of the lispy name.
 
 The type notation should be dropped from the field name when
 converting to the lispy name.
