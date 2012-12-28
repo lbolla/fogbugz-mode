@@ -103,9 +103,10 @@ Examples:
                              api-names
                              xml-root-element
                              xml-child-element)
-  "Maps the response from a Fogbugz api call to more lispy
-names. The API-DO-ARGS are passed to
-`fogbugz-api-do'.
+  "Maps the response from a Fogbugz api call to more lispy names
+and does some type conversion.
+
+The API-DO-ARGS are passed to `fogbugz-api-do'.
 
 EMACS-NAMES are the lispy property names for each item. API-NAMES
 are the corresponding property names in the API response.
@@ -117,7 +118,13 @@ over."
     (mapcar (lambda (node)
               (loop for emacs-name in emacs-names
                     for api-name in api-names
-                    collect (cons emacs-name (third (first (xml-get-children node api-name))))))
+                    for value = (third (first (xml-get-children node api-name)))
+                    when (string-prefix-p "ix" (symbol-name api-name))
+                    collect (cons emacs-name (string-to-number value))
+                    else when (string-prefix-p "f" (symbol-name api-name))
+                    collect (cons emacs-name (string= "true" value))
+                    else
+                    collect (cons emacs-name value)))
             (xml-get-children (first (xml-get-children response
                                                        xml-root-element))
                               xml-child-element))))
@@ -244,9 +251,6 @@ Uses `fogbugz-map-response'."
                         '(ixPriority sPriority)
                         'priorities
                         'priority))
-  ;; TODO
-  (let ((response (fogbugz-api-do "listPriorities")))
-    response))
 
 (defun fogbugz-list-people ()
   "Returns a list of people registered in Fogbugz.
@@ -257,11 +261,11 @@ needed, the normal list is enough:
     Arguments: fIncludeNormal=1, fIncludeCommunity=1,
     fIncludeVirtual=1 -- if you don't supply any arguments, the
     API assumes you mean fIncludeNormal=1"
-  (let ((response (fogbugz-api-do "listPeople")))
-    (mapcar (lambda (node) (loop for emacs-name in '(id name email phone administrator-p community-p virtual-p deleted-p notify-p homepage locale language timezone)
-                                 for api-name in '(ixPerson sFullName sEmail sPhone fAdministrator fCommunity fVirtual fDeleted fNotify sHomepage sLocale sLanguage sTimeZoneKey)
-                                 collect (cons emacs-name (third (first (xml-get-children node api-name))))))
-            (xml-get-children (first (xml-get-children response 'people)) 'person))))
+  (fogbugz-map-response '("listPeople")
+                        '(id name email phone administrator-p community-p virtual-p deleted-p notify-p homepage locale language timezone)
+                        '(ixPerson sFullName sEmail sPhone fAdministrator fCommunity fVirtual fDeleted fNotify sHomepage sLocale sLanguage sTimeZoneKey)
+                        'people
+                        'person))
 
 (defun fogbugz-list-cases ()
   "Returns a list of all cases. You probably want to use

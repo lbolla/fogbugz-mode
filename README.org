@@ -47,13 +47,13 @@ Need to store a token
 *** DONE List areas
 *** DONE List areas for a project
 *** DONE List categories
-*** TODO List priorities
+*** DONE List priorities
 *** DONE List people
 *** TODO List statuses
 *** TODO List milestones (a.k.a fix-fors)
 *** TODO Create case
 *** TODO Edit case
-*** TODO Mapping field names of fogbugz objects to lispy names
+*** DONE Mapping field names of fogbugz objects to lispy names
 When a field name begins with "f" it's a boolean value, should be
 converted "true" to T and the "false" to NIL. The lispy name should be
 suffixed with "-p".
