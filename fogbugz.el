@@ -181,8 +181,16 @@ already logged off."
   (let ((response (fogbugz-api-do "listFilters")))
     (mapcar (lambda (node) (list (cons 'type (xml-get-attribute node 'type))
                                  (cons 'id (xml-get-attribute node 'sFilter))
+                                 (cons 'current-p (string= "current" (xml-get-attribute node 'status)))
                                  (cons 'name (third node))))
             (xml-get-children (first (xml-get-children response 'filters)) 'filter))))
+
+(defun fogbugz-get-current-filter ()
+  "Returns the current filter.
+
+Filters this out from the output of `fogbugz-list-filters'."
+  (find-if (lambda (filter) (rest (assoc 'current-p filter)))
+           (fogbugz-list-filters)))
 
 (defun fogbugz-set-current-filter (filter-id)
   "Sets the current filter for Fogbugz"
