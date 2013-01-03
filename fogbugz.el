@@ -253,7 +253,7 @@ Uses `fogbugz-map-response'."
 
 Uses `fogbugz-map-response'."
   (fogbugz-map-response '("listCategories")
-                        '(id name plural status-default-id status-default-active-id schedule-item-p deleted-p order icon-type attachment-icon-id)
+                        '(category-id category-name plural status-default-id status-default-active-id schedule-item-p deleted-p order icon-type attachment-icon-id)
                         '(ixCategory sCategory sPlural ixStatusDefault ixStatusDefaultActive fIsScheduleItem fDeleted iOrder nIconType ixAttachementIcon)
                         'categories
                         'category))
@@ -263,7 +263,7 @@ Uses `fogbugz-map-response'."
 
 Uses `fogbugz-map-response'."
   (fogbugz-map-response '("listPriorities")
-                        '(id name)
+                        '(priority-id priority-name)
                         '(ixPriority sPriority)
                         'priorities
                         'priority))
