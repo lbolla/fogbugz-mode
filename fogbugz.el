@@ -145,6 +145,11 @@ version."
             (third (nth 5 version)))))
 
 (defun fogbugz-logon ()
+  "Logs you onto Fogbugz using `fogbugz-username' and
+`fogbugz-password'. Stores an authentication token in
+`*fogbugz-api-token*'. If unable to logon, this will be set to
+NIL and all other commands will not work."
+  (setq *fogbugz-api-token* nil)
   (let* ((response (fogbugz-api-do "logon"
                                    "&email=" (url-hexify-string fogbugz-username)
                                    "&password=" fogbugz-password))
