@@ -161,6 +161,9 @@ NIL and all other commands will not work."
           (t error "Some other error occurred"))))
 
 (defun fogbugz-logoff ()
+  "Logs you off from Fogbugz. Sends the logoff command to the
+server and sets `*fogbugz-api-token*' to NIL. Issues a warning if
+already logged off."
   (if *fogbugz-api-token*
       (progn
         (fogbugz-api-do "logoff")
