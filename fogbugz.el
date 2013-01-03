@@ -283,10 +283,68 @@ needed, the normal list is enough:
                         'people
                         'person))
 
+(defun fogbugz-convert-lispy-column-names (columns)
+  "Converts list of column symbols to a comma-separated string
+that lists columns using their Fogbugz API name. Any column names
+that aren't recognized will be returned as is. This lets you use
+id or ixBug in the columns list."
+  (reduce (lambda (a b) (concat a "," b))
+          (mapcar (lambda (column)
+                    (symbol-name
+                     (case column
+                       ('id 'ixBug)
+                       ('parent-id 'ixBugParent)
+                       ('children-ids 'ixBugChildren)
+                       ('open-p 'fOpen)
+                       ('title 'sTitle)
+                       ('original-title 'sOriginalTitle)
+                       ('summary 'sLatestTextSummary)
+                       ('event-id 'ixBugEventLatest)
+                       ('event-text 'ixBugEventLatestText)
+                       ('project-id 'ixProject)
+                       ('project-name 'sProject)
+                       ('area-id 'ixArea)
+                       ('area-name 'sArea)
+                       ('assigned-person-id 'ixPersonAssignedTo)
+                       ('assigned-person-name 'sPersonAssignedTo)
+                       ('opener-id 'ixPersonOpenedBy)
+                       ('resolver-id 'ixPersonResolvedBy)
+                       ('closer-id 'ixPersonClosedBy)
+                       ('last-editor-id 'ixPersonLastEditedBy)
+                       ('status-id 'ixStatus)
+                       ('status-name 'sStatus)
+                       ('duplicates 'ixBugDuplicates)
+                       ('original 'ixBugOriginal)
+                       ('priority-id 'ixPriority)
+                       ('priority-name 'sPriority)
+                       ('fix-for-id 'ixFixFor)
+                       ('fix-for-name 'sFixFor)
+                       ('fix-for-date 'dtFixFor)
+                       ('version 'sVersion)
+                       ('computer 'sComputer)
+                       ('original-estimate 'hrsOrigEst)
+                       ('current-estimate 'hrsCurEst)
+                       ('hours-elapsed 'hrsElapsed)
+                       ('customer-email 'sCustomerEmail)
+                       ('mailbox 'ixMailbox)
+                       ('category-id 'ixCategory)
+                       ('category-name 'sCategory)
+                       ('date-opened 'dtOpened)
+                       ('date-resolved 'dtResolved)
+                       ('date-closed 'dtClosed)
+                       ('date-due 'dtDue)
+                       ('last-updated-on 'dtLastUpdated)
+                       ('replied-p 'fReplied)
+                       ('forwarded-p 'fForwarded)
+                       ('ticket-id 'sTicket)
+                       ('release-notes 'sReleaseNotes)
+                       ('subscribed-p 'fSubscribed)
+                       (t column))))
+                  columns)))
+
 (defun fogbugz-list-cases ()
   "Returns a list of all cases in the current filter (which can
 be set using `fogbugz-set-current-filter'). You probably want to
 use `fogbugz-filter-cases' or `fogbugz-search-cases'."
   (let ((response (fogbugz-api-do "search")))
     ))
-                                  
