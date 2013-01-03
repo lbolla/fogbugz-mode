@@ -284,6 +284,9 @@ needed, the normal list is enough:
                         'person))
 
 (defun fogbugz-list-cases ()
-  "Returns a list of all cases. You probably want to use
-`fogbugz-filter-cases' or `fogbugz-search-cases'."
-  (let ((response (fogbugz-api-do "search"
+  "Returns a list of all cases in the current filter (which can
+be set using `fogbugz-set-current-filter'). You probably want to
+use `fogbugz-filter-cases' or `fogbugz-search-cases'."
+  (let ((response (fogbugz-api-do "search")))
+    ))
+                                  
