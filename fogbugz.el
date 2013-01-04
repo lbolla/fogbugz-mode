@@ -140,8 +140,7 @@ XML-ROOT-ELEMENT is the root element wrapping the response, and
 XML-CHILD-ELEMENT is each child element in the response to map
 over."
   (let* ((response (apply 'fogbugz-api-do api-do-args))
-         (children (xml-get-children (first (xml-get-children response
-                                                              xml-root-element))
+         (children (xml-get-children (first (xml-get-children response xml-root-element))
                                      xml-child-element)))
     (mapcar (lambda (node)
               (loop for emacs-name in emacs-names
@@ -153,7 +152,7 @@ over."
                                                     (string-to-number value))
                                                    ((string-prefix-p "f" (symbol-name api-name))
                                                     (string= "true" value))
-                                                   (t (cons emacs-name value))))))
+                                                   (t value)))))
             children)))
 
 (defun fogbugz-api-version ()
