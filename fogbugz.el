@@ -109,25 +109,30 @@ and does some type conversion.
 The API-DO-ARGS are passed to `fogbugz-api-do'.
 
 EMACS-NAMES are the lispy property names for each item. API-NAMES
-are the corresponding property names in the API response.
+are the corresponding property names in the API response. The
+properties are either attributes or child elements of each
+XML-CHILD-ELEMENT. The attribute value has precedence over the
+child element value.
 
 XML-ROOT-ELEMENT is the root element wrapping the response, and
 XML-CHILD-ELEMENT is each child element in the response to map
 over."
-  (let ((response (apply 'fogbugz-api-do api-do-args)))
+  (let* ((response (apply 'fogbugz-api-do api-do-args))
+         (children (xml-get-children (first (xml-get-children response
+                                                              xml-root-element))
+                                     xml-child-element)))
     (mapcar (lambda (node)
               (loop for emacs-name in emacs-names
                     for api-name in api-names
-                    for value = (third (first (xml-get-children node api-name)))
-                    when (string-prefix-p "ix" (symbol-name api-name))
-                    collect (cons emacs-name (string-to-number value))
-                    else when (string-prefix-p "f" (symbol-name api-name))
-                    collect (cons emacs-name (string= "true" value))
-                    else
-                    collect (cons emacs-name value)))
-            (xml-get-children (first (xml-get-children response
-                                                       xml-root-element))
-                              xml-child-element))))
+                    for value = (or (xml-get-attribute-or-nil node api-name)
+                                    (third (first (xml-get-children node api-name))))
+                    unless (null value)
+                    collect (cons emacs-name (cond ((string-prefix-p "ix" (symbol-name api-name))
+                                                    (string-to-number value))
+                                                   ((string-prefix-p "f" (symbol-name api-name))
+                                                    (string= "true" value))
+                                                   (t (cons emacs-name value))))))
+            children)))
 
 (defun fogbugz-api-version ()
   "Returns the version of the api as a list of two numbers; the
