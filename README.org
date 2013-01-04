@@ -45,7 +45,8 @@ Need to store a token
 *** DONE Set the current case filter, file:./fogbugz.el::fogbugz-set-current-filter
 *** DONE Get the current case filter, file:./fogbugz.el::fogbugz-get-current-filter
 *** TODO List cases
-**** TODO List cases for current case filter
+**** DONE Set the current case filter and list cases for it
+**** DONE List cases for current case filter
 **** TODO Search cases
 **** DONE Map lispy names back to fogbugz as an HTTP parameter, file:./fogbugz.el::fogbugz-convert-lispy-column-names
 *** DONE List projects, file:./fogbugz.el::fogbugz-list-projects

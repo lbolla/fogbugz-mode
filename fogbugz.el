@@ -382,3 +382,10 @@ The columns are optional and are converted using `fogbugz-convert-lispy-column-n
                         '(ixBug ixBugParent ixBugChildren fOpen sTitle sOriginalTitle sLatestTextSummary)
                         'cases
                         'case))
+
+(defun fogbugz-filter-cases (filter-id &optional columns)
+  "Sets the current filter to FILTER-ID (using
+`fogbugz-set-current-filter') and then returns a list of cases
+from `fogbugz-list-cases'."
+  (fogbugz-set-current-filter filter-id)
+  (fogbugz-list-cases columns))
