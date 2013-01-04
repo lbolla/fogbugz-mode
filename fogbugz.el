@@ -139,6 +139,7 @@ version."
       (error "fogbugz-api-url may be incorrect."))))
 
 (defun fogbugz-api-version-string ()
+  "Returns the version of the Fogbugz API as a string in the format: MAJOR.MINOR, example: \"8.1\""
   (let ((version (fogbugz-api-version)))
     (format "%s.%s"
             (third (nth 3 version))
@@ -342,9 +343,11 @@ id or ixBug in the columns list."
                        (t column))))
                   columns)))
 
-(defun fogbugz-list-cases ()
+(defun fogbugz-list-cases (&optional columns)
   "Returns a list of all cases in the current filter (which can
 be set using `fogbugz-set-current-filter'). You probably want to
-use `fogbugz-filter-cases' or `fogbugz-search-cases'."
+use `fogbugz-filter-cases' or `fogbugz-search-cases'.
+
+The columns are optional and are converted using `fogbugz-convert-lispy-column-names'."
   (let ((response (fogbugz-api-do "search")))
     ))
