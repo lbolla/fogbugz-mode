@@ -1,6 +1,6 @@
 ;;; fogbugz.el --- Interface to fogbugz API
 
-;; Copyright (C) 2012 Rudolf Olah
+;; Copyright (C) 2012-2013 Rudolf Olah
 
 ;; Author: Rudolf Olah
 ;; URL: http://github.com/omouse/fogbugz-emacs/tree/master
