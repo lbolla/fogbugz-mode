@@ -376,7 +376,7 @@ use `fogbugz-filter-cases' or `fogbugz-search-cases'.
 
 The columns are optional and are converted using `fogbugz-convert-lispy-column-names'."
   (fogbugz-map-response (if columns
-                            (list "search" "&" (fogbugz-convert-lispy-column-names columns))
+                            (list "search" "&cols=" (fogbugz-convert-lispy-column-names columns))
                           (list "search"))
                         '(id parent-id children-ids open-p title original-title summary)
                         '(ixBug ixBugParent ixBugChildren fOpen sTitle sOriginalTitle sLatestTextSummary)
