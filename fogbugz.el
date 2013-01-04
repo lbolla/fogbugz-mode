@@ -81,22 +81,44 @@ Modifed based on identica-mode.el, renamed from `identica-get-response-body'; re
     (and start
          (first (xml-parse-region start (point-max))))))
 
-(defun fogbugz-api-do (command &rest url-args)
-  "Connects to the Fogbugz api and issues the command. Returns XML response from the buffer (using `fogbugz-get-response-body') or an error.
+(defun fogbugz-response-error (response)
+  "Returns the error code and error message from the RESPONSE (an
+XML object returned from `fogbugz-get-response-body') or nil.
 
-Constructs the URL for this using COMMAND and URL-ARGS. URL-ARGS are strings that construct the parameter list.
+Full list of error codes can be found here: http://fogbugz.stackexchange.com/fogbugz-xml-api#errorCodes
+
+Example: (fogbugz-response-error response) => '(3 \"Not logged on\")"
+  (let ((error-element (first (xml-get-children response 'error))))
+    (and error-element
+         (list
+          (string-to-number (xml-get-attribute error-element 'code))
+          (third error-element)))))
+
+(defun fogbugz-api-do (command &rest url-args)
+  "Connects to the Fogbugz api and issues the command. Returns an
+XML response from the buffer (using `fogbugz-get-response-body')
+or an error. Logs in using `fogbugz-logon' if necessary.
+
+Constructs the URL for this using COMMAND and URL-ARGS. URL-ARGS
+are strings that construct the parameter list. Uses
+`fogbugz-api-url' to construct the URL.
 
 Examples:
     (fogbugz-api-do \"example\" \"&foo=bar\"
                                 \"&alice=bob\")
     (fogbugz-api-do \"another-example\")
-"
-  (let ((buffer (url-retrieve-synchronously (apply 'concat fogbugz-api-url ".asp?cmd=" command
+
+Stores the token in `*fogbugz-api-token*'."
+  (let* ((buffer (url-retrieve-synchronously (apply 'concat fogbugz-api-url ".asp?cmd=" command
                                                    "&token=" *fogbugz-api-token*
-                                                   url-args))))
-    (if buffer
-        (fogbugz-get-response-body buffer)
-      (error "Some kind of url error occurred"))))
+                                                   url-args)))
+         (response (and buffer (fogbugz-get-response-body buffer)))
+         (fogbugz-error (and response (fogbugz-response-error response))))
+    (cond ((null response) (error "Some kind of url error occurred"))
+          ((null fogbugz-error) response)
+          ((= (first fogbugz-error) 3) (progn (fogbugz-logon)
+                                   (apply 'fogbugz-api-do command url-args)))
+          (t (error "Fogbugz error:%d:%s" (first fogbugz-error) (second fogbugz-error))))))
 
 (defun fogbugz-map-response (api-do-args
                              emacs-names
