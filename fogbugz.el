@@ -59,10 +59,18 @@ or .asp) in the URL. This is added depending on the command"
   :group 'fogbugz
   :type 'string)
 
-(defvar *fogbugz-api-token*
+(defvar fogbugz-api-token
   nil
   "The token that the FogBugz API returns after logging on. Used
 by all commands (other than logon of course).")
+
+(defvar fogbugz-case-emacs-names
+  '(id parent-id children-ids open-p title original-title summary)
+  "The emacs property names for Fogbugz Case objects.")
+
+(defvar fogbugz-case-api-names
+  '(ixBug ixBugParent ixBugChildren fOpen sTitle sOriginalTitle sLatestTextSummary)
+  "The api property names for Fogbugz Case objects.")
 
 (defun fogbugz-get-response-body (&optional buffer)
   "Exract HTTP response body from HTTP response, parse it as XML, and return a XML tree as list.
@@ -108,9 +116,9 @@ Examples:
                                 \"&alice=bob\")
     (fogbugz-api-do \"another-example\")
 
-Stores the token in `*fogbugz-api-token*'."
+Stores the token in `fogbugz-api-token'."
   (let* ((buffer (url-retrieve-synchronously (apply 'concat fogbugz-api-url ".asp?cmd=" command
-                                                   "&token=" *fogbugz-api-token*
+                                                   "&token=" fogbugz-api-token
                                                    url-args)))
          (response (and buffer (fogbugz-get-response-body buffer)))
          (fogbugz-error (and response (fogbugz-response-error response))))
@@ -174,27 +182,27 @@ version."
 (defun fogbugz-logon ()
   "Logs you onto Fogbugz using `fogbugz-username' and
 `fogbugz-password'. Stores an authentication token in
-`*fogbugz-api-token*'. If unable to logon, this will be set to
+`fogbugz-api-token'. If unable to logon, this will be set to
 NIL and all other commands will not work."
-  (setq *fogbugz-api-token* nil)
+  (setq fogbugz-api-token nil)
   (let* ((response (fogbugz-api-do "logon"
                                    "&email=" (url-hexify-string fogbugz-username)
                                    "&password=" fogbugz-password))
          (token (third (first (xml-get-children response 'token))))
          (error-node (first (xml-get-children response 'error))))
     (cond (token (progn (message "Logged on to Fogbugz...")
-                        (setq *fogbugz-api-token* token)))
+                        (setq fogbugz-api-token token)))
           ((xml-get-attribute-or-nil error-node 'code) (error (third error-node)))
           (t error "Some other error occurred"))))
 
 (defun fogbugz-logoff ()
   "Logs you off from Fogbugz. Sends the logoff command to the
-server and sets `*fogbugz-api-token*' to NIL. Issues a warning if
+server and sets `fogbugz-api-token' to NIL. Issues a warning if
 already logged off."
-  (if *fogbugz-api-token*
+  (if fogbugz-api-token
       (progn
         (fogbugz-api-do "logoff")
-        (setq *fogbugz-api-token* nil))
+        (setq fogbugz-api-token nil))
     (display-warning :fogbugz "Not logged on")))
 
 (defun fogbugz-list-filters ()
@@ -378,8 +386,8 @@ The columns are optional and are converted using `fogbugz-convert-lispy-column-n
   (fogbugz-map-response (if columns
                             (list "search" "&cols=" (fogbugz-convert-lispy-column-names columns))
                           (list "search"))
-                        '(id parent-id children-ids open-p title original-title summary)
-                        '(ixBug ixBugParent ixBugChildren fOpen sTitle sOriginalTitle sLatestTextSummary)
+                        fogbugz-case-emacs-names
+                        fogbugz-case-api-names
                         'cases
                         'case))
 
@@ -389,3 +397,14 @@ The columns are optional and are converted using `fogbugz-convert-lispy-column-n
 from `fogbugz-list-cases'."
   (fogbugz-set-current-filter filter-id)
   (fogbugz-list-cases columns))
+
+(defun fogbugz-search-cases (query &optional columns)
+  "Returns a list of all cases that match the QUERY. No filtering
+occurs here."
+  (fogbugz-map-response (if columns
+                            (list "search" "&q=" (url-hexify-string query) "&cols=" (fogbugz-convert-lispy-column-names columns))
+                          (list "search" "&q=" (url-hexify-string query)))
+                        fogbugz-case-emacs-names
+                        fogbugz-case-api-names
+                        'cases
+                        'case))
