@@ -38,7 +38,7 @@ library and the CXML library to generate the XML output.
 
 * Tasks
 ** fogbugz-emacs
-*** TODO Autologin when token is out of date
+*** DONE Autologin when token is out of date
 *** DONE [[file:./fogbugz.el::fogbugz-logon][Login]] and [[file:./fogbugz.el::fogbugz-logoff][logoff]] commands
 Need to store a token
 *** DONE List case filters, file:./fogbugz.el::fogbugz-list-filters
@@ -130,3 +130,5 @@ status is switched to DONE)
 
 (There is no due date for this case, but if there were, it'd be used
 for the DEADLINE)
+
+
