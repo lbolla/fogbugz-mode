@@ -77,6 +77,7 @@ Examples:
   - ixPersonOwner :: owner-id
   - sPerson :: person
   - fDeleted :: deleted-p
+*** TODO View Status
 ** org-fogbugz
 *** TODO Pull case from API
 *** TODO Create new case
@@ -95,6 +96,8 @@ Using a timestamp stored in the properties, Last-Updated or something
 like that. Need to be able to force updating with a prefix argument.
 *** DONE Create tags alist
 *** TODO Modify tags alist so that it makes categories a separate tag group, file:org-fogbugz.el::org-fogbugz-tag-alist
+*** TODO List DONE statuses
+*** TODO List TODO statuses
 ** Mock Server
 *** TODO Implement commands
 **** TODO [#A] Implement view case command
