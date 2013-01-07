@@ -18,7 +18,5 @@ with a `case-id'."
 `org-tag-persistent-alist'. Uses categories and people as
 tags. There are no fast-tag-selection characters for any of the
 tags."
-  (progn
-    (fogbugz-logon)
-    (mapcar (lambda (x) (list (replace-regexp-in-string " " "-" (downcase (rest (assoc 'name x))))))
-            (concatenate 'list (fogbugz-list-categories) (fogbugz-list-people)))))
+  (mapcar (lambda (x) (list (replace-regexp-in-string " " "-" (downcase (rest (assoc 'name x))))))
+          (concatenate 'list (fogbugz-list-categories) (fogbugz-list-people))))
