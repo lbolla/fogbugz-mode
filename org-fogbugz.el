@@ -3,14 +3,14 @@
 (require 'fogbugz)
 (require 'org)
 
-(defvar org-fogbugz-done-status-ids
-  '()
-  "List of status ids that indicate a DONE status. You can get a
-list of statuses using `fogbugz-list-statuses'.")
-
 (defun org-insert-todo-fogbugz (case-id)
   "Insert a new heading that uses information from a FogBugz case
-with a `case-id'."
+with a `case-id'.
+
+Uses the id of the status to determine if this is a TODO or DONE
+item.
+
+Inserts the due date as a deadline."
   (let ((buf (current-buffer))
         (fb-case (first (fogbugz-search-cases (number-to-string case-id) '(id title opener-id area-name category-name status-id status-name original-estimate due-date)))))
     (set-buffer buf)
