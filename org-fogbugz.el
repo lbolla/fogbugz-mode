@@ -31,6 +31,10 @@ Inserts the due date as a deadline."
       (org-put "LastUpdated" 'last-updated-on (lambda (date) (if date (first (split-string date "T" t)) ""))))
     (if (rest (assoc 'due-date fb-case))
         (org-deadline nil (rest (assoc 'due-date fb-case))))
+    (let ((status (fogbugz-view-status (rest (assoc 'status-id fb-case)))))
+      (when (rest (assoc 'work-done-p status))
+        (set-buffer buf)
+        (org-todo 'done)))
 ))
 
 (defun org-fogbugz-tag-alist ()
