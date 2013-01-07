@@ -358,6 +358,14 @@ needed, the normal list is enough:
                         'people
                         'person))
 
+(defun fogbugz-list-statuses ()
+  "Returns a list of statuses in FogBugz."
+  (fogbugz-map-response '("listStatuses")
+                        '(id name category-id work-done-p resolved-p duplicate-p deleted-p order)
+                        '(ixStatus sStatus ixCategory fWorkDone fResolved fDuplicate fDeleted iOrder)
+                        'statuses
+                        'status))
+
 (defun fogbugz-convert-lispy-column-names (columns)
   "Converts list of column symbols to a comma-separated string
 that lists columns using their Fogbugz API name. Any column names

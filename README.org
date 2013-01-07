@@ -55,7 +55,7 @@ Need to store a token
 *** DONE List categories
 *** DONE List priorities
 *** DONE List people
-*** TODO List statuses
+*** DONE List statuses, file:./fogbugz.el::fogbugz-list-statuses
 *** TODO List milestones (a.k.a fix-fors)
 *** TODO Create case
 *** TODO Edit case
