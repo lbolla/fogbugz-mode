@@ -172,7 +172,7 @@ Stores the token in `fogbugz-api-token'."
                              emacs-names
                              api-names
                              xml-root-element
-                             xml-child-element)
+                             &optional xml-child-element)
   "Maps the response from a Fogbugz api call to more lispy names
 and does some type conversion.
 
@@ -186,11 +186,12 @@ child element value.
 
 XML-ROOT-ELEMENT is the root element wrapping the response, and
 XML-CHILD-ELEMENT is each child element in the response to map
-over."
+over. The XML-CHILD-ELEMENT is optional, if it is nil it's
+assumed the XML-ROOT-ELEMENT is being converted into an object."
   (let* ((response (apply 'fogbugz-api-do api-do-args))
-         (children (xml-get-children (first (xml-get-children response xml-root-element))
-                                     xml-child-element)))
-    (mapcar (lambda (node)
+         (root (first (xml-get-children response xml-root-element)))
+         (children (xml-get-children root xml-child-element)))
+    (flet ((map-api-to-emacs (node)
               (loop for emacs-name in emacs-names
                     for api-name in api-names
                     for value = (or (xml-get-attribute-or-nil node api-name)
@@ -200,8 +201,10 @@ over."
                                                     (string-to-number value))
                                                    ((string-prefix-p "f" (symbol-name api-name))
                                                     (string= "true" value))
-                                                   (t value)))))
-            children)))
+                                                   (t value))))))
+      (if xml-child-element
+          (mapcar 'map-api-to-emacs children)
+        (map-api-to-emacs root)))))
 
 (defun fogbugz-api-version ()
   "Returns the version of the api as a list of two numbers; the
@@ -364,6 +367,13 @@ needed, the normal list is enough:
                         '(id name category-id work-done-p resolved-p duplicate-p deleted-p order)
                         '(ixStatus sStatus ixCategory fWorkDone fResolved fDuplicate fDeleted iOrder)
                         'statuses
+                        'status))
+
+(defun fogbugz-view-status (status-id)
+  "Returns information about a Fogbugz Status object given the STATUS-ID."
+  (fogbugz-map-response `("viewStatus" "&ixStatus=" ,(number-to-string status-id))
+                        '(id name category-id work-done-p resolved-p duplicate-p deleted-p order)
+                        '(ixStatus sStatus ixCategory fWorkDone fResolved fDuplicate fDeleted iOrder)
                         'status))
 
 (defun fogbugz-convert-lispy-column-names (columns)
