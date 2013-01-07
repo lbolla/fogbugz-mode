@@ -65,11 +65,51 @@ or .asp) in the URL. This is added depending on the command"
 by all commands (other than logon of course).")
 
 (defvar fogbugz-case-emacs-names
-  '(id parent-id children-ids open-p title original-title summary)
+  '(id parent-id children-ids
+       open-p
+       title original-title
+       summary
+       event-id event-text
+       project-id project-name
+       area-id area-name
+       assigned-person-id assigned-person-name opener-id resolver-id closer-id last-editor-id
+       status-id status-name
+       duplicates original
+       priority-id priority-name
+       fix-for-id fix-for-name fix-for-date
+       version computer
+       original-estimate current-estimate hours-elapsed
+       customer-email mailbox
+       category-id category-name
+       date-opened date-resolved date-closed date-due
+       last-updated-on
+       replied-p forwarded-p ticket-id
+       release-notes
+       subscribed-p)
   "The emacs property names for Fogbugz Case objects.")
 
 (defvar fogbugz-case-api-names
-  '(ixBug ixBugParent ixBugChildren fOpen sTitle sOriginalTitle sLatestTextSummary)
+  '(ixBug ixBugParent ixBugChildren
+          fOpen
+          sTitle sOriginalTitle
+          sLatestTextSummary
+          ixBugEventLatest ixBugEventLatestText
+          ixProject sProject
+          ixArea sArea
+          ixPersonAssignedTo sPersonAssignedTo ixPersonOpenedBy ixPersonResolvedBy ixPersonClosedBy ixPersonLastEditedBy
+          ixStatus sStatus
+          ixBugDuplicates ixBugOriginal
+          ixPriority sPriority
+          ixFixFor sFixFor dtFixFor
+          sVersion sComputer
+          hrsOrigEst hrsCurEst hrsElapsed
+          sCustomerEmail ixMailbox
+          ixCategory sCategory
+          dtOpened dtResolved dtClosed dtDue
+          dtLastUpdated
+          fReplied fForwarded sTicket
+          sReleaseNotes
+          fSubscribed)
   "The api property names for Fogbugz Case objects.")
 
 (defun fogbugz-get-response-body (&optional buffer)
