@@ -2,3 +2,5 @@
 *.fasl
 /#fogbugz.el#
 /.#fogbugz.el
+/#README.org#
+/.#README.org
