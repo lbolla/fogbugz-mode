@@ -23,7 +23,6 @@ Inserts the due date as a deadline."
       (org-put "CaseId" 'id 'number-to-string)
       (org-put "StatusId" 'status-id 'number-to-string)
       (org-put "Status" 'status-name)
-      (org-put "OriginalTitle" 'title)
       (org-put "OpenedBy" 'opener-id 'number-to-string)
       (org-put "Area" 'area-name)
       (org-put "Category" 'category-name)
@@ -44,3 +43,8 @@ tags. There are no fast-tag-selection characters for any of the
 tags."
   (mapcar (lambda (x) (list (replace-regexp-in-string " " "-" (downcase (rest (assoc 'name x))))))
           (concatenate 'list (fogbugz-list-categories) (fogbugz-list-people))))
+
+(defun org-fogbugz-insert-cases (case-ids)
+  "Inserts a list of cases using `org-insert-todo-fogbugz'."
+  (loop for case-id in case-ids
+        do (org-insert-todo-fogbugz case-id)))
