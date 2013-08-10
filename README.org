@@ -1,3 +1,15 @@
+* Important
+
+/This project is no longer maintained/
+
+I can no longer work on fogbugz-mode unless I have an account to use or
+if I add more fake API calls to the included fake API server. I'm no
+longer employed at a workplace that uses FogBugz. If I get around to
+another place that uses FogBugz then I'll continue work on this.
+
+I think this is a good enough start for other FogBugz/Emacs users to
+get going with.
+
 * License and COPYING
 See [[file:COPYING][COPYING]] for license and copyright information.
 
